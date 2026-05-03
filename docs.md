@@ -2,7 +2,7 @@
 
 > Target: Raspberry Pi Zero 2 W running Raspberry Pi OS Lite / Debian 13 "trixie" on arm64.
 > Last checked: 2026-05-03
-> Goal: a lightweight X11/Openbox desktop with a Cowon Tangram-style palette across Openbox, GTK apps, tint2, jgmenu, rofi, Dillo, mpv, Geany, PCManFM, Terminator, and Conky.
+> Goal: a lightweight X11/Openbox desktop with a Cowon Tangram-style palette across Openbox, GTK apps, tint2, jgmenu, rofi, Dillo, mpv, Geany, PCManFM, xterm, and Conky.
 
 This document is meant to be both a rebuild recipe and a repo map for the versioned configs. Commands assume you are logged in on the Pi as your normal user.
 
@@ -26,7 +26,6 @@ dotfiles/
     openbox/
     pcmanfm/
     rofi/
-    terminator/
     tint2/
   .dillo/
   .themes/Tangram/
@@ -135,7 +134,7 @@ sudo apt install -y \
   nitrogen \
   feh \
   geany \
-  terminator \
+  xterm \
   lxappearance \
   pcmanfm \
   rofi \
@@ -165,7 +164,7 @@ Notes:
 - `rofi` is the keyboard launcher.
 - `dillo` is the lightweight web browser.
 - `mpv` is the lightweight media player.
-- `terminator`, `geany`, and `pcmanfm` are friendly lightweight GUI defaults.
+- `xterm`, `geany`, and `pcmanfm` are lightweight GUI defaults.
 
 ## 3. Backup Existing Desktop Config
 
@@ -261,8 +260,8 @@ If Openbox is not currently running, the reconfigure command will fail harmlessl
 
 Current working behavior:
 
-- Right-click on the desktop launches `jgmenu_run`.
-- `jgmenu_run` should be called with no arguments.
+- Right-click on the desktop launches `~/.local/bin/tangram-menu`.
+- `tangram-menu` calls `jgmenu --simple --at-pointer --csv-file ~/.config/jgmenu/prepend.csv`, so the menu is short-lived and does not leave a resident `jgmenu` daemon in RAM.
 - Pointer placement is controlled by `~/.config/jgmenu/jgmenurc`.
 - Menu content is self-contained in `~/.config/jgmenu/prepend.csv`; it does not depend on BunsenLabs `bl-*` helper scripts.
 - Power menu commands use `systemctl reboot` and `systemctl poweroff`, which work from the active local desktop session through logind/polkit without adding passwordless sudo rules.
@@ -275,7 +274,7 @@ mkdir -p ~/.config/jgmenu
 cp -a ~/raspberry_pi_zero_2w/dotfiles/.config/jgmenu ~/.config/
 ```
 
-Patch every Openbox right-click desktop binding to run `jgmenu_run`:
+Patch the Openbox desktop/root right-click bindings to run the Tangram menu wrapper:
 
 ```bash
 mkdir -p ~/.config/openbox
@@ -300,7 +299,7 @@ for mousebind in root.findall(".//mousebind"):
             mousebind.remove(child)
         action = ET.SubElement(mousebind, "action", {"name": "Execute"})
         command = ET.SubElement(action, "command")
-        command.text = "jgmenu_run"
+        command.text = "sh -c '$HOME/.local/bin/tangram-menu >/tmp/jgmenu-right-click.log 2>&1 &'"
 
 tree.write(path, encoding="UTF-8", xml_declaration=True)
 PY
@@ -308,21 +307,14 @@ PY
 openbox --reconfigure
 ```
 
-Why no `--at-pointer`?
-
-`--at-pointer` is a `jgmenu` option, not a `jgmenu_run` option. Using `jgmenu_run --at-pointer` fails with:
-
-```text
-fatal: '--at-pointer' is not a jgmenu_run command
-```
-
 Troubleshooting:
 
 ```bash
-jgmenu_run
-jgmenu_run --help
+~/.local/bin/tangram-menu
+jgmenu --help
 killall jgmenu || true
 rm -f ~/.jgmenu-lockfile
+cat /tmp/jgmenu-right-click.log
 ```
 
 ## 8. Tangram Theme Coverage
@@ -352,7 +344,6 @@ Versioned theme/config files:
 ~/.config/jgmenu/jgmenurc
 ~/.config/jgmenu/prepend.csv
 ~/.config/rofi/config.rasi
-~/.config/terminator/config
 ~/.config/geany/geany.conf
 ~/.config/geany/colorschemes/tangram.conf
 ~/.config/libfm/libfm.conf
@@ -677,11 +668,13 @@ Media player:
 mpv --player-operation-mode=pseudo-gui --idle=yes
 ```
 
-Terminator preferences:
+Terminal:
 
 ```bash
-terminator
+xterm
 ```
+
+Terminator was removed from the default setup because it can consume too much memory and freeze the Pi Zero 2 W desktop.
 
 Fonts worth keeping installed:
 
@@ -718,6 +711,15 @@ sudo sysctl --system
 ```
 
 The installer also installs `zram-tools` and sets `/etc/default/zramswap` to use about 50 percent of RAM. This gives the 416 MiB Pi Zero 2 W more breathing room without relying on slow SD-card swap.
+
+The installer also writes small systemd drop-ins so shutdown/reboot does not wait too long on stale GUI session scopes:
+
+```text
+/etc/systemd/system.conf.d/99-tangram-fast-stop.conf
+/etc/systemd/logind.conf.d/99-tangram-session-cleanup.conf
+```
+
+Those set a 10 second stop timeout and clean up user processes when the session ends. This is intentionally appliance-like behavior for a small Pi desktop.
 
 List running services before disabling anything:
 
@@ -826,7 +828,7 @@ Reset jgmenu:
 ```bash
 killall jgmenu || true
 rm -f ~/.jgmenu-lockfile
-jgmenu_run
+~/.local/bin/tangram-menu
 ```
 
 Check X startup errors after `startx`:
@@ -852,10 +854,10 @@ Open the screenshot and confirm the first colored Conky pixels do not touch the 
 | 2026-05-02 | Base Openbox desktop | Working | Xorg, xinit, Openbox, tint2, nitrogen, jgmenu, conky-all |
 | 2026-05-02 | BunsenLabs configs | Working | `carbon` branch copied into `~/.config` |
 | 2026-05-02 | `startx` boot file | Working | `~/.xinitrc` contains `exec openbox-session` |
-| 2026-05-02 | jgmenu right-click | Working | Use `jgmenu_run` without `--at-pointer` |
+| 2026-05-02 | jgmenu right-click | Working | Use `~/.local/bin/tangram-menu` with `jgmenu --simple --at-pointer` |
 | 2026-05-02 | MX Conky theme data | Installed | `mx-conky-data`, `mx-conky-data-bin`, `mx-conky-data-themes` 20251102 |
 | 2026-05-02 | Conky Manager2 | Installed | Built from `~/conky-manager2`; binary at `/usr/bin/conky-manager2` |
 | 2026-05-02 | MX Conky Qt manager | Skipped | Build was too swap-heavy for Pi Zero 2 W; use `conky-manager2` |
-| 2026-05-03 | Tangram system theme | Working | GTK, Openbox, tint2, jgmenu, rofi, Dillo, mpv, Geany, PCManFM, Terminator |
+| 2026-05-03 | Tangram system theme | Working | GTK, Openbox, tint2, jgmenu, rofi, Dillo, mpv, Geany, PCManFM, xterm |
 | 2026-05-03 | Self-contained jgmenu | Working | Removed Bunsen `bl-*` helper dependencies; power menu uses `systemctl` |
 | 2026-05-03 | Clean installer | Added | `install.sh` clones/applies the repo and installs packages from a Lite base |

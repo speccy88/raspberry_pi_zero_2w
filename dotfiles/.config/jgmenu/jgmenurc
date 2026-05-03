@@ -1,9 +1,9 @@
 tint2_look          = 0
-csv_cmd             = apps
+csv_cmd             = cat ~/.config/jgmenu/prepend.csv
 position_mode       = pointer
 menu_margin_x       = 8
 menu_margin_y       = 34
-stay_alive          = 1
+stay_alive          = 0
 menu_width          = 275
 menu_padding_top    = 32
 menu_padding_right  = 6

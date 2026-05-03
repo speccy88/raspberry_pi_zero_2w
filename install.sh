@@ -28,7 +28,7 @@ sudo apt install -y \
   nitrogen \
   feh \
   geany \
-  terminator \
+  xterm \
   lxappearance \
   pcmanfm \
   rofi \
@@ -61,6 +61,7 @@ if [ -d "$HOME/.config" ]; then
 fi
 
 cp -a dotfiles/. "$HOME/"
+chmod +x "$HOME/.local/bin/tangram-menu" 2>/dev/null || true
 mkdir -p "$HOME/.conky"
 cp -a themes/conky/. "$HOME/.conky/"
 mkdir -p "$HOME/wallpapers" "$HOME/Pictures/Screenshots" "$HOME/.local/bin"
@@ -80,6 +81,18 @@ vm.swappiness=10
 vm.vfs_cache_pressure=50
 EOS
 sudo sysctl --system >/dev/null || true
+
+sudo mkdir -p /etc/systemd/system.conf.d /etc/systemd/logind.conf.d
+sudo tee /etc/systemd/system.conf.d/99-tangram-fast-stop.conf >/dev/null <<'EOS'
+[Manager]
+DefaultTimeoutStopSec=10s
+EOS
+sudo tee /etc/systemd/logind.conf.d/99-tangram-session-cleanup.conf >/dev/null <<'EOS'
+[Login]
+KillUserProcesses=yes
+UserStopDelaySec=5s
+EOS
+sudo systemctl daemon-reexec || true
 
 if [ -f /etc/default/zramswap ]; then
   sudo sed -i 's/^#*PERCENT=.*/PERCENT=50/' /etc/default/zramswap

@@ -104,7 +104,7 @@ launcher_icon_theme = Adwaita
 launcher_icon_theme_override = 0
 startup_notifications = 0
 launcher_tooltip = 1
-launcher_item_app = /usr/share/applications/terminator.desktop
+launcher_item_app = /usr/share/applications/xterm.desktop
 launcher_item_app = /usr/share/applications/pcmanfm.desktop
 launcher_item_app = /usr/share/applications/geany.desktop
 launcher_item_app = /usr/share/applications/dillo.desktop
@@ -117,7 +117,7 @@ clock_padding = 8 0 8
 clock_background_id = 5
 clock_tooltip = %A %F
 clock_lclick_command = rofi -show drun
-clock_rclick_command = jgmenu_run
+clock_rclick_command = ~/.local/bin/tangram-menu
 
 battery_tooltip = 1
 battery_low_status = 20

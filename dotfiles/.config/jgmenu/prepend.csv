@@ -5,7 +5,7 @@
 @search,,78,6,220,22,2,left,top,auto,#000000 0,Search
 
 ^sep()
-Terminal,terminator,utilities-terminal
+Terminal,xterm,utilities-terminal
 Files,pcmanfm,system-file-manager
 Editor,geany,accessories-text-editor
 Browser,dillo,web-browser
@@ -17,17 +17,17 @@ User Settings,^checkout(user-settings),preferences-desktop
 System Settings,^checkout(system-settings),preferences-system
 Power,^checkout(power),system-shutdown
 ^sep()
-All Applications,^checkout(apps),applications-other
+All Applications,rofi -show drun,applications-other
 
 ^tag(utilities)
 Back,^back()
 Rofi Launcher,rofi -show drun,system-run
 Rofi Window Switcher,rofi -show window,preferences-system-windows
-Task Manager,terminator -T htop -e htop,utilities-system-monitor
+Task Manager,xterm -T htop -e htop,utilities-system-monitor
 Screenshot,sh -c 'mkdir -p "$HOME/Pictures/Screenshots"; scrot "$HOME/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png"',camera-photo
 File Search,rofi -show find -modi find:~/.local/bin/tangram-rofi-find,edit-find
-Network Info,terminator -T "Network Info" -e sh -c "ip -br addr; printf '\\nPress Enter to close '; read",network-workgroup
-Disk Usage,terminator -T "Disk Usage" -e sh -c "df -h; printf '\\nPress Enter to close '; read",drive-harddisk
+Network Info,xterm -T "Network Info" -e sh -c "ip -br addr; printf '\\nPress Enter to close '; read",network-workgroup
+Disk Usage,xterm -T "Disk Usage" -e sh -c "df -h; printf '\\nPress Enter to close '; read",drive-harddisk
 
 ^tag(user-settings)
 Back,^back()
@@ -45,13 +45,13 @@ Restart Conky,sh -c 'pkill -f "conky.*MX-CowonTangram-SysInfo" 2>/dev/null; cd ~
 
 ^tag(system-settings)
 Back,^back()
-System Info,terminator -T "System Info" -e sh -c "hostnamectl; printf '\\n'; free -h; printf '\\n'; df -h /; printf '\\nPress Enter to close '; read",computer
-Processes,terminator -T htop -e htop,utilities-system-monitor
-Package Update,terminator -T "APT Update" -e sh -c "sudo apt update; printf '\\nPress Enter to close '; read",system-software-update
-Upgrade Packages,terminator -T "APT Upgrade" -e sh -c "sudo apt full-upgrade; printf '\\nPress Enter to close '; read",system-software-update
-Raspberry Pi Config,terminator -T raspi-config -e sudo raspi-config,preferences-system
-Services,terminator -T "Running Services" -e sh -c "systemctl --type=service --state=running --no-pager; printf '\\nPress Enter to close '; read",preferences-system-services
-Journal Errors,terminator -T "Journal Errors" -e sh -c "journalctl -p 3 -xb --no-pager; printf '\\nPress Enter to close '; read",dialog-warning
+System Info,xterm -T "System Info" -e sh -c "hostnamectl; printf '\\n'; free -h; printf '\\n'; df -h /; printf '\\nPress Enter to close '; read",computer
+Processes,xterm -T htop -e htop,utilities-system-monitor
+Package Update,xterm -T "APT Update" -e sh -c "sudo apt update; printf '\\nPress Enter to close '; read",system-software-update
+Upgrade Packages,xterm -T "APT Upgrade" -e sh -c "sudo apt full-upgrade; printf '\\nPress Enter to close '; read",system-software-update
+Raspberry Pi Config,xterm -T raspi-config -e sudo raspi-config,preferences-system
+Services,xterm -T "Running Services" -e sh -c "systemctl --type=service --state=running --no-pager; printf '\\nPress Enter to close '; read",preferences-system-services
+Journal Errors,xterm -T "Journal Errors" -e sh -c "journalctl -p 3 -xb --no-pager; printf '\\nPress Enter to close '; read",dialog-warning
 
 ^tag(power)
 Back,^back()
@@ -59,5 +59,3 @@ Lock,sh -c 'command -v slock >/dev/null && slock || command -v xlock >/dev/null 
 Log Out,openbox --exit,system-log-out
 Reboot,systemctl reboot,system-reboot
 Power Off,systemctl poweroff,system-shutdown
-
-^tag(apps)

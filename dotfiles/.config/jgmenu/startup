@@ -1,0 +1,30 @@
+#!/bin/sh
+
+gtktheme_cache=~/.cache/jgmenu/.last-gtktheme
+mkdir -p ~/.cache/jgmenu
+
+gtktheme () {
+	while IFS='=' read -r key value; do
+		key=${key#"${key%%[![:blank:]]*}"} # strip any leading spaces
+		key=${key%"${key##*[![:blank:]]}"} # " " trailing " "
+		if [ "${key}" = 'gtk-theme-name' ]; then
+			value=${value%%#*} # strip trailing comments
+			value=${value#"${value%%[![:blank:]]*}"}
+			value=${value%"${value##*[![:blank:]]}"}
+			printf '%s' "${value}"
+			return 0
+		fi
+	done < "$HOME/.config/gtk-3.0/settings.ini"
+}
+
+old=$(cat "$gtktheme_cache")
+new=$(gtktheme)
+
+if [ -n "${old}" ]; then
+	if ! [ "${old}" = "${new}" ]; then
+	printf '%b\n' "info: change gtk theme from ${old} to ${new}"
+	jgmenu_run gtktheme
+	fi
+else
+	printf '%s' "$new" > "$gtktheme_cache"
+fi

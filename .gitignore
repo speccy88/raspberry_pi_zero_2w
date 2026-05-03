@@ -1,0 +1,32 @@
+# Local/editor noise
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Local captures and diagnostics
+*.png
+*.jpg
+*.jpeg
+*.log
+*.tmp
+*.tar
+*.tar.gz
+*.zip
+
+# Backups generated while testing configs
+*.bak
+*.bak.*
+backup-config/
+
+# Secrets and machine-local files
+.env
+.env.*
+id_rsa
+id_ed25519
+*.pem
+known_hosts
+authorized_keys

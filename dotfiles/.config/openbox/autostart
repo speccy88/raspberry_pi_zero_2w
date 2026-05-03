@@ -11,4 +11,4 @@ tint2 -c ~/.config/tint2/tangram.tint2rc &
 unclutter -idle 2 -root &
 
 sleep 2
-conky -c ~/.conky/MX-CowonTangram-SysInfo/MX-CowonTangram-SysInfo &
+(cd ~/.conky/MX-CowonTangram-SysInfo && conky -c ./MX-CowonTangram-SysInfo) &

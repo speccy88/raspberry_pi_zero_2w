@@ -81,13 +81,33 @@ cr=nil
 return ""
 end-- end main function
 
+function conky_tangram_panel()
+if conky_window == nil then return end
+local frame_height=790
+local cs = cairo_xlib_surface_create(conky_window.display, conky_window.drawable, conky_window.visual, conky_window.width, conky_window.height)
+local cr = cairo_create(cs)
+cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE)
+cairo_set_source_rgba(cr, 0, 0, 0, 0)
+cairo_rectangle(cr, 0, 0, conky_window.width, conky_window.height)
+cairo_fill(cr)
+cairo_set_operator(cr, CAIRO_OPERATOR_OVER)
+cairo_set_source_rgba(cr, 0, 0, 0, 0.92)
+cairo_rectangle(cr, 8, 8, conky_window.width - 16, frame_height - 16)
+cairo_fill(cr)
+cairo_destroy(cr)
+cairo_surface_destroy(cs)
+cr=nil
+return ""
+end-- end tangram panel function
+
 function conky_tangram_border(width)
 if conky_window == nil then return end
 local border_width=tonumber(width) or 8
 local half=border_width/2
+local frame_height=790
 local cs = cairo_xlib_surface_create(conky_window.display, conky_window.drawable, conky_window.visual, conky_window.width, conky_window.height)
 local cr = cairo_create(cs)
-local gradient = cairo_pattern_create_linear(0, 0, conky_window.width, conky_window.height)
+local gradient = cairo_pattern_create_linear(0, 0, conky_window.width, frame_height)
 local colors = {
   {0.00, 0xDB0085},
   {0.22, 0x54D8FC},
@@ -101,7 +121,7 @@ for _, stop in ipairs(colors) do
 end
 cairo_set_source(cr, gradient)
 cairo_set_line_width(cr, border_width)
-cairo_rectangle(cr, half, half, conky_window.width - border_width, conky_window.height - border_width)
+cairo_rectangle(cr, half, half, conky_window.width - border_width, frame_height - border_width)
 cairo_stroke(cr)
 cairo_pattern_destroy(gradient)
 cairo_destroy(cr)

@@ -17,7 +17,7 @@ conky.config = {
 	own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
 	own_window_argb_visual = true,
 	own_window_argb_value = 0,
-	own_window_transparent = true,
+	own_window_transparent = false,
 	own_window_colour = '000000',
 
 	use_xft = true,
@@ -30,8 +30,8 @@ conky.config = {
 	alignment = 'top_right',
 	gap_x = 0,
 	gap_y = 28,
-	minimum_width = 340, minimum_height = 700,
-	maximum_width = 340,
+	minimum_width = 356, minimum_height = 580,
+	maximum_width = 356,
 
 	draw_shades = false,
 	draw_outline = false,
@@ -39,6 +39,8 @@ conky.config = {
 	draw_graph_borders = false,
 	stippled_borders = 1,
 	border_width = 0,
+	border_inner_margin = 10,
+	border_outer_margin = 0,
 
 	default_color = 'ffffff',
 	default_shade_color = '1d1d1d',
@@ -56,6 +58,8 @@ conky.config = {
 	pad_percents = 2,
 	top_name_width = 12,
 	lua_load = 'allcombined.lua',
+	lua_draw_hook_pre = 'tangram_panel',
+	lua_draw_hook_post = 'tangram_border',
 
 	-- network templates
 	if_up_strictness = 'address',
@@ -75,7 +79,6 @@ if os.execute('pidof -q fluxbox') and not os.execute('pidof -q picom') then
 end
 
 conky.text = [[
-${lua tangram_border 8}
 ${voffset 12}
 ${font JetBrainsMono Nerd Font:size=72}${color5}${time %H}
 ${color2}${offset 34}${voffset -82}${time %M}
@@ -92,52 +95,36 @@ ${color3}Uptime:${color2} $uptime
 ${font JetBrainsMono Nerd Font:bold:size=12}${color5}CPU ${color4}${hr 2}${font}
 ${color0}${execi 86400 sh -c 'tr -d "\0" </proc/device-tree/model 2>/dev/null || awk -F": " "/model name|Hardware|Model/ {print \\$2; exit}" /proc/cpuinfo'}
 ${color3}Load:${color2} ${loadavg 1} ${color1}${alignr}${color3}Freq:${color2} ${freq_g} GHz
-${color3}CPU:${color2} ${cpu cpu0}% ${lua gradbar {78, 361, "${cpu cpu0}", 100, 42, 2, 10, 1, 0x1d1d1d, 0.35, 0xA0F000, 1, 0xFFFF00, 1, 0xDB0085, 1}}
+${color3}CPU:${color2} ${cpu cpu0}%
 ${color3}Temp:${color2} ${execi 5 sh -c 'if [ -r /sys/class/thermal/thermal_zone0/temp ]; then raw=$(cat /sys/class/thermal/thermal_zone0/temp); printf "%s.%s" "$((raw / 1000))" "$(((raw % 1000) / 100))"; else printf "n/a"; fi'}${color0}°C
 
 ${font JetBrainsMono Nerd Font:bold:size=12}${color5}MEMORY ${color4}${hr 2}${font}
 ${color3}RAM:${color2} $mem ${color1}/ $memmax${alignr}${color4}${memperc}%
-${lua gradbar {6, 445, "${memperc}", 100, 54, 2, 10, 1, 0x1d1d1d, 0.35, 0xA0F000, 1, 0xFFFF00, 1, 0xDB0085, 1}}
 ${color3}Swap:${color2} $swap ${color1}/ $swapmax${alignr}${color4}${swapperc}%
-${lua gradbar {6, 477, "${swapperc}", 100, 54, 2, 10, 1, 0x1d1d1d, 0.35, 0x54D8FC, 1, 0xFFFF00, 1, 0xDB0085, 1}}
 
 ${font JetBrainsMono Nerd Font:bold:size=12}${color5}DISK ${color4}${hr 2}${font}
 ${color3}Root:${color2} ${fs_used /} ${color1}/ ${fs_size /}${alignr}${color4}${fs_used_perc /}%
-${lua gradbar {6, 537, "${fs_used_perc /}", 100, 54, 2, 10, 1, 0x1d1d1d, 0.35, 0xA0F000, 1, 0xFFFF00, 1, 0xDB0085, 1}}
 ${color3}I/O:${color2} read ${diskio_read}${alignr}write ${diskio_write}
 
 ${font JetBrainsMono Nerd Font:bold:size=12}${color5}PROCESSES & LOAD ${color4}${hr 2}${font}
 ${color3}Processes:${color2} $processes${alignr}${color3}Running:${color2} $running_processes
-${color1}${font JetBrainsMono Nerd Font:bold:size=9}PROCESS              CPU     MEM       PID${font}
-${color0}${font JetBrainsMono Nerd Font:size=9}${top name 1}${alignr}${top cpu 1}%   ${top mem_res 1}   ${top pid 1}
-${top name 2}${alignr}${top cpu 2}%   ${top mem_res 2}   ${top pid 2}
-${top name 3}${alignr}${top cpu 3}%   ${top mem_res 3}   ${top pid 3}
-${top name 4}${alignr}${top cpu 4}%   ${top mem_res 4}   ${top pid 4}
-${top name 5}${alignr}${top cpu 5}%   ${top mem_res 5}   ${top pid 5}${font}
 
 ${font JetBrainsMono Nerd Font:bold:size=12}${color5}NETWORK ${color4}${hr 2}${font}
 ${if_up $template0}\
 ${color3}Wireless:${color2} $template0${alignr}${color3}IP:${color2} ${addr $template0}
 ${color3}Up:${color2} ${upspeed $template0}${alignr}${color3}Down:${color2} ${downspeed $template0}
-${color3}Sent:${color2} ${totalup $template0}${alignr}${color3}Received:${color2} ${totaldown $template0}
-${upspeedgraph $template0 25,160 1d1d1d FFFF00}${alignr}${downspeedgraph $template0 25,160 1d1d1d 54D8FC}
 ${endif}\
 ${if_up $template1}\
 ${color3}Ethernet:${color2} $template1${alignr}${color3}IP:${color2} ${addr $template1}
 ${color3}Up:${color2} ${upspeed $template1}${alignr}${color3}Down:${color2} ${downspeed $template1}
-${color3}Sent:${color2} ${totalup $template1}${alignr}${color3}Received:${color2} ${totaldown $template1}
-${upspeedgraph $template1 25,160 1d1d1d FFFF00}${alignr}${downspeedgraph $template1 25,160 1d1d1d 54D8FC}
 ${endif}\
 ${if_up $template2}\
 ${color3}Wireless:${color2} $template2${alignr}${color3}IP:${color2} ${addr $template2}
 ${color3}Up:${color2} ${upspeed $template2}${alignr}${color3}Down:${color2} ${downspeed $template2}
-${color3}Sent:${color2} ${totalup $template2}${alignr}${color3}Received:${color2} ${totaldown $template2}
-${upspeedgraph $template2 25,160 1d1d1d FFFF00}${alignr}${downspeedgraph $template2 25,160 1d1d1d 54D8FC}
 ${endif}\
 ${if_up $template3}\
 ${color3}Ethernet:${color2} $template3${alignr}${color3}IP:${color2} ${addr $template3}
 ${color3}Up:${color2} ${upspeed $template3}${alignr}${color3}Down:${color2} ${downspeed $template3}
-${color3}Sent:${color2} ${totalup $template3}${alignr}${color3}Received:${color2} ${totaldown $template3}
-${upspeedgraph $template3 25,160 1d1d1d FFFF00}${alignr}${downspeedgraph $template3 25,160 1d1d1d 54D8FC}
 ${endif}
+${voffset -194}
 ]];

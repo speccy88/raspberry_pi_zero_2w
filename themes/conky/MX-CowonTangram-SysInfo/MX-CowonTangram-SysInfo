@@ -28,7 +28,7 @@ conky.config = {
 	use_spacer = 'left',
 
 	alignment = 'top_right',
-	gap_x = 8,
+	gap_x = 0,
 	gap_y = 28,
 	minimum_width = 340, minimum_height = 760,
 	maximum_width = 340,
@@ -75,6 +75,7 @@ if os.execute('pidof -q fluxbox') and not os.execute('pidof -q picom') then
 end
 
 conky.text = [[
+${lua tangram_border 8}
 ${voffset 12}
 ${font JetBrainsMono Nerd Font:size=72}${color5}${time %H}
 ${color2}${offset 34}${voffset -82}${time %M}

@@ -181,6 +181,17 @@ Notes:
 - `lxterminal`, `geany`, and `pcmanfm` are lightweight GUI defaults.
 - JetBrainsMono Nerd Font is installed per-user by `install.sh` for readable text and icon glyphs.
 
+Install PicoClaw from the Sipeed arm64 release package:
+
+```bash
+curl -fL --retry 3 -o /tmp/picoclaw_aarch64.deb \
+  https://github.com/sipeed/picoclaw/releases/latest/download/picoclaw_aarch64.deb
+sudo apt install -y /tmp/picoclaw_aarch64.deb
+rm -f /tmp/picoclaw_aarch64.deb
+```
+
+`install.sh` runs this step automatically when `picoclaw` or `picoclaw-launcher` is missing.
+
 ## 3. Backup Existing Desktop Config
 
 Before replacing config, keep a timestamped backup:
@@ -753,7 +764,13 @@ zramswap.service
 
 It keeps SSH, NetworkManager, wpa_supplicant, dbus, systemd-logind, polkit, and time sync.
 
-PicoClaw runs as a user service:
+PicoClaw is installed by downloading the latest Sipeed aarch64 `.deb` package:
+
+```text
+https://github.com/sipeed/picoclaw/releases/latest/download/picoclaw_aarch64.deb
+```
+
+It then runs as a user service:
 
 ```bash
 systemctl --user status picoclaw-launcher.service
@@ -931,7 +948,7 @@ Open the screenshot and confirm the first colored Conky pixels do not touch the 
 | 2026-05-03 | Tangram system theme | Working | GTK, Openbox, tint2, jgmenu, rofi, Dillo, mpv, Geany, PCManFM, LXTerminal |
 | 2026-05-03 | Self-contained jgmenu | Working | Removed Bunsen `bl-*` helper dependencies; power menu uses `systemctl` |
 | 2026-05-03 | Clean installer | Added | `install.sh` clones/applies the repo and installs packages from a Lite base |
-| 2026-05-03 | PicoClaw launcher | Working | User service runs `picoclaw-launcher` on localhost port 18800 with linger enabled |
+| 2026-05-03 | PicoClaw launcher | Working | Installer downloads Sipeed `picoclaw_aarch64.deb`; user service runs `picoclaw-launcher` on localhost port 18800 with linger enabled |
 | 2026-05-03 | Service trimming | Working | Disabled Avahi, Bluetooth, CUPS, cloud-init, serial getty, wait-online, and udisks |
 | 2026-05-03 | Console desktop start | Working | `~/.profile` starts `startx` only on `/dev/tty1` |
 | 2026-05-03 | VC4 Xorg hang workaround | Added | Installs `20-vc4-noaccel.conf` to disable Xorg acceleration/DRI on the Pi Zero 2 W |

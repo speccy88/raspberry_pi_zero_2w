@@ -3,6 +3,7 @@ set -euo pipefail
 
 REPO_URL="${REPO_URL:-https://github.com/speccy88/raspberry_pi_zero_2w.git}"
 TARGET_DIR="${TARGET_DIR:-$HOME/raspberry_pi_zero_2w}"
+PICOCLAW_DEB_URL="${PICOCLAW_DEB_URL:-https://github.com/sipeed/picoclaw/releases/latest/download/picoclaw_aarch64.deb}"
 
 if [ "$(id -u)" -eq 0 ]; then
   echo "Run this as the normal desktop user, not root." >&2
@@ -51,6 +52,13 @@ sudo apt install -y \
   fonts-dejavu \
   fonts-noto \
   fonts-font-awesome
+
+if ! command -v picoclaw >/dev/null 2>&1 || ! command -v picoclaw-launcher >/dev/null 2>&1; then
+  tmp_picoclaw_dir="$(mktemp -d)"
+  curl -fL --retry 3 -o "$tmp_picoclaw_dir/picoclaw_aarch64.deb" "$PICOCLAW_DEB_URL"
+  sudo apt install -y "$tmp_picoclaw_dir/picoclaw_aarch64.deb"
+  rm -rf "$tmp_picoclaw_dir"
+fi
 
 if [ ! -d "$TARGET_DIR/.git" ]; then
   mkdir -p "$(dirname "$TARGET_DIR")"

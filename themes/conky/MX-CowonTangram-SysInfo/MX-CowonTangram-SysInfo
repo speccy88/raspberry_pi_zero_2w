@@ -28,7 +28,7 @@ conky.config = {
 	use_spacer = 'left',
 
 	alignment = 'top_right',
-	gap_x = 45,
+	gap_x = 8,
 	gap_y = 28,
 	minimum_width = 340, minimum_height = 760,
 	maximum_width = 340,

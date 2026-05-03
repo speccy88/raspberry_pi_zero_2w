@@ -16,6 +16,10 @@ Thumbs.db
 *.tar
 *.tar.gz
 *.zip
+!dotfiles/Pictures/
+!dotfiles/Pictures/wallpapers/
+!dotfiles/Pictures/wallpapers/*.jpg
+!dotfiles/Pictures/wallpapers/*.png
 
 # Backups generated while testing configs
 *.bak

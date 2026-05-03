@@ -70,7 +70,7 @@ cp -a dotfiles/. "$HOME/"
 chmod +x "$HOME/.local/bin/tangram-menu" 2>/dev/null || true
 mkdir -p "$HOME/.conky"
 cp -a themes/conky/. "$HOME/.conky/"
-mkdir -p "$HOME/wallpapers" "$HOME/Pictures/Screenshots" "$HOME/.local/bin"
+mkdir -p "$HOME/Pictures/wallpapers" "$HOME/Pictures/Screenshots" "$HOME/.local/bin"
 
 if ! fc-match 'JetBrainsMono Nerd Font' | grep -qi 'JetBrainsMono'; then
   tmp_font_dir="$(mktemp -d)"
@@ -90,6 +90,12 @@ chmod +x "$HOME/.local/bin/tangram-rofi-find"
 
 if [ ! -f "$HOME/.xinitrc" ]; then
   printf '%s\n' 'exec openbox-session' > "$HOME/.xinitrc"
+fi
+
+if [ -f system/etc/X11/xorg.conf.d/20-vc4-noaccel.conf ]; then
+  sudo install -D -m 0644 \
+    system/etc/X11/xorg.conf.d/20-vc4-noaccel.conf \
+    /etc/X11/xorg.conf.d/20-vc4-noaccel.conf
 fi
 
 sudo tee /etc/sysctl.d/99-pizero2w-rice.conf >/dev/null <<'EOS'

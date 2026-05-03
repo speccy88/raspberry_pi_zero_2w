@@ -425,6 +425,8 @@ killall tint2 || true
 tint2 -c ~/.config/tint2/tangram.tint2rc &
 ```
 
+The Tangram tint2 config is intentionally minimal: one full-width bottom taskbar, with no launcher shortcuts, systray, clock, or battery widget.
+
 Make that the default by editing `~/.config/openbox/autostart`:
 
 ```bash
@@ -953,3 +955,4 @@ Open the screenshot and confirm the first colored Conky pixels do not touch the 
 | 2026-05-03 | Console desktop start | Working | `~/.profile` starts `startx` only on `/dev/tty1` |
 | 2026-05-03 | VC4 Xorg hang workaround | Added | Installs `20-vc4-noaccel.conf` to disable Xorg acceleration/DRI on the Pi Zero 2 W |
 | 2026-05-03 | Bundled wallpapers | Added | Includes Cyberpunk 2077 and ASUS ROG wallpapers under `~/Pictures/wallpapers` |
+| 2026-05-03 | Minimal tint2 panel | Updated | Full-width taskbar only; removed launcher shortcuts, tray, clock, and battery widgets |

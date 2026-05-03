@@ -128,13 +128,11 @@
 
        use obconf if you want to change these without having to log out
        and back in -->
-  <number>4</number>
+  <number>2</number>
   <firstdesk>1</firstdesk>
   <names>
-    <!-- set names up here if you want to, like this:
-    <name>desktop 1</name>
-    <name>desktop 2</name>
-    -->
+    <name>main</name>
+    <name>side</name>
   </names>
   <popupTime>875</popupTime>
   <!-- The number of milliseconds to show the popup for when switching
@@ -541,7 +539,7 @@
       <action name="Raise"/>
       <action name="Unshade"/>
     </mousebind>
-    <mousebind button="Right" action="Click">
+    <mousebind button="Right" action="Press">
       <action name="Execute">
         <command>sh -c '$HOME/.local/bin/tangram-menu >/tmp/jgmenu-right-click.log 2>&amp;1 &amp;'</command>
       </action>
@@ -605,7 +603,7 @@
     <mousebind button="Middle" action="Press">
       <action name="ShowMenu"><menu>client-list-combined-menu</menu></action>
     </mousebind>
-    <mousebind button="Right" action="Click">
+    <mousebind button="Right" action="Press">
       <action name="Execute">
         <command>sh -c '$HOME/.local/bin/tangram-menu >/tmp/jgmenu-right-click.log 2>&amp;1 &amp;'</command>
       </action>

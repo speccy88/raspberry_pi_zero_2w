@@ -28,7 +28,7 @@ sudo apt install -y \
   nitrogen \
   feh \
   geany \
-  xterm \
+  lxterminal \
   lxappearance \
   pcmanfm \
   rofi \
@@ -38,13 +38,19 @@ sudo apt install -y \
   slock \
   scrot \
   htop \
+  ncdu \
+  xdotool \
+  xclip \
+  xsel \
+  unclutter \
   curl \
   wget \
   unzip \
+  fonts-jetbrains-mono \
+  fonts-firacode \
   fonts-dejavu \
   fonts-noto \
-  fonts-font-awesome \
-  zram-tools
+  fonts-font-awesome
 
 if [ ! -d "$TARGET_DIR/.git" ]; then
   mkdir -p "$(dirname "$TARGET_DIR")"
@@ -65,6 +71,16 @@ chmod +x "$HOME/.local/bin/tangram-menu" 2>/dev/null || true
 mkdir -p "$HOME/.conky"
 cp -a themes/conky/. "$HOME/.conky/"
 mkdir -p "$HOME/wallpapers" "$HOME/Pictures/Screenshots" "$HOME/.local/bin"
+
+if ! fc-match 'JetBrainsMono Nerd Font' | grep -qi 'JetBrainsMono'; then
+  tmp_font_dir="$(mktemp -d)"
+  mkdir -p "$HOME/.local/share/fonts/nerd-fonts/JetBrainsMono"
+  curl -fL --retry 3 -o "$tmp_font_dir/JetBrainsMono.zip" \
+    https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
+  unzip -oq "$tmp_font_dir/JetBrainsMono.zip" -d "$HOME/.local/share/fonts/nerd-fonts/JetBrainsMono"
+  rm -rf "$tmp_font_dir"
+  fc-cache -f "$HOME/.local/share/fonts"
+fi
 
 cat > "$HOME/.local/bin/tangram-rofi-find" <<'EOS'
 #!/usr/bin/env sh
@@ -94,13 +110,32 @@ UserStopDelaySec=5s
 EOS
 sudo systemctl daemon-reexec || true
 
-if [ -f /etc/default/zramswap ]; then
-  sudo sed -i 's/^#*PERCENT=.*/PERCENT=50/' /etc/default/zramswap
-  sudo systemctl enable --now zramswap.service >/dev/null 2>&1 || true
-fi
+for unit in \
+  avahi-daemon.service avahi-daemon.socket \
+  bluetooth.service hciuart.service \
+  cups.service cups.socket cups-browsed.service \
+  NetworkManager-wait-online.service \
+  serial-getty@ttyS0.service \
+  cloud-init-local.service cloud-init-network.service cloud-config.service cloud-final.service cloud-init-main.service \
+  cloud-init-hotplugd.socket cloud-init.target \
+  udisks2.service \
+  zramswap.service
+do
+  sudo systemctl disable --now "$unit" >/dev/null 2>&1 || true
+done
 
-if pgrep -x openbox >/dev/null 2>&1; then
-  openbox --reconfigure || true
+sudo systemctl mask \
+  NetworkManager-wait-online.service \
+  serial-getty@ttyS0.service \
+  cloud-init-main.service cloud-init-hotplugd.socket cloud-init.target \
+  zramswap.service >/dev/null 2>&1 || true
+sudo systemctl reset-failed zramswap.service >/dev/null 2>&1 || true
+
+systemctl --user daemon-reload || true
+systemctl --user enable --now picoclaw-launcher.service >/dev/null 2>&1 || true
+
+if [ -n "${DISPLAY:-}" ] && pgrep -x openbox >/dev/null 2>&1; then
+  timeout 5s openbox --reconfigure >/tmp/tangram-openbox-reconfigure.log 2>&1 || true
 fi
 
 if [ -n "${DISPLAY:-}" ]; then

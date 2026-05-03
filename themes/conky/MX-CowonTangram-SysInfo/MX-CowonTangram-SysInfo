@@ -21,7 +21,7 @@ conky.config = {
 	own_window_colour = '000000',
 
 	use_xft = true,
-	font = 'Roboto-Light:size=10',
+	font = 'JetBrainsMono Nerd Font:size=10',
 	xftalpha = 0.9,
 	override_utf8_locale = true,
 	uppercase = false,
@@ -76,45 +76,45 @@ end
 
 conky.text = [[
 ${voffset 12}
-${font Roboto-Light:size=82}${color5}${time %H}
+${font JetBrainsMono Nerd Font:size=72}${color5}${time %H}
 ${color2}${offset 34}${voffset -82}${time %M}
-${voffset -116}${offset 8}${font Roboto-Light:bold:size=11}${color1}${time %A   %B %d}
-${offset 132}${voffset -145}${font Roboto-Light:size=11}${color2}${if_match "pmfix${time %p}" == "pmfix"}${else}${time %p}${endif}
+${voffset -102}${offset 8}${font JetBrainsMono Nerd Font:bold:size=11}${color1}${time %A   %B %d}
+${offset 132}${voffset -132}${font JetBrainsMono Nerd Font:size=11}${color2}${if_match "pmfix${time %p}" == "pmfix"}${else}${time %p}${endif}
 ${voffset 148}
-${font Roboto-Light:bold:size=13}${color5}SYSTEM INFORMATION ${color4}${hr 2}${font}
+${font JetBrainsMono Nerd Font:bold:size=12}${color5}SYSTEM INFORMATION ${color4}${hr 2}${font}
 ${color3}OS:${color0} ${execi 86400 sh -c '. /etc/os-release && printf "%s" "$PRETTY_NAME"'}
 ${color3}Host:${color2} $nodename${color0}${alignr}${color3}Arch:${color2} $machine
 ${color3}Kernel:${color0} $kernel
 ${color3}Time:${color2} ${if_match "pmfix${time %p}" == "pmfix"}${time $template7}${else}${time %a %d %b %Y - %I:%M %p}${endif}
 ${color3}Uptime:${color2} $uptime
 
-${font Roboto-Light:bold:size=13}${color5}CPU ${color4}${hr 2}${font}
+${font JetBrainsMono Nerd Font:bold:size=12}${color5}CPU ${color4}${hr 2}${font}
 ${color0}${execi 86400 sh -c 'tr -d "\0" </proc/device-tree/model 2>/dev/null || awk -F": " "/model name|Hardware|Model/ {print \\$2; exit}" /proc/cpuinfo'}
 ${color3}Load:${color2} ${loadavg 1} ${color1}${alignr}${color3}Freq:${color2} ${freq_g} GHz
 ${color3}CPU:${color2} ${cpu cpu0}% ${lua gradbar {78, 361, "${cpu cpu0}", 100, 42, 2, 10, 1, 0x1d1d1d, 0.35, 0xA0F000, 1, 0xFFFF00, 1, 0xDB0085, 1}}
 ${color3}Temp:${color2} ${execi 5 sh -c 'if [ -r /sys/class/thermal/thermal_zone0/temp ]; then raw=$(cat /sys/class/thermal/thermal_zone0/temp); printf "%s.%s" "$((raw / 1000))" "$(((raw % 1000) / 100))"; else printf "n/a"; fi'}${color0}°C
 
-${font Roboto-Light:bold:size=13}${color5}MEMORY ${color4}${hr 2}${font}
+${font JetBrainsMono Nerd Font:bold:size=12}${color5}MEMORY ${color4}${hr 2}${font}
 ${color3}RAM:${color2} $mem ${color1}/ $memmax${alignr}${color4}${memperc}%
 ${lua gradbar {6, 445, "${memperc}", 100, 54, 2, 10, 1, 0x1d1d1d, 0.35, 0xA0F000, 1, 0xFFFF00, 1, 0xDB0085, 1}}
 ${color3}Swap:${color2} $swap ${color1}/ $swapmax${alignr}${color4}${swapperc}%
 ${lua gradbar {6, 477, "${swapperc}", 100, 54, 2, 10, 1, 0x1d1d1d, 0.35, 0x54D8FC, 1, 0xFFFF00, 1, 0xDB0085, 1}}
 
-${font Roboto-Light:bold:size=13}${color5}DISK ${color4}${hr 2}${font}
+${font JetBrainsMono Nerd Font:bold:size=12}${color5}DISK ${color4}${hr 2}${font}
 ${color3}Root:${color2} ${fs_used /} ${color1}/ ${fs_size /}${alignr}${color4}${fs_used_perc /}%
 ${lua gradbar {6, 537, "${fs_used_perc /}", 100, 54, 2, 10, 1, 0x1d1d1d, 0.35, 0xA0F000, 1, 0xFFFF00, 1, 0xDB0085, 1}}
 ${color3}I/O:${color2} read ${diskio_read}${alignr}write ${diskio_write}
 
-${font Roboto-Light:bold:size=13}${color5}PROCESSES & LOAD ${color4}${hr 2}${font}
+${font JetBrainsMono Nerd Font:bold:size=12}${color5}PROCESSES & LOAD ${color4}${hr 2}${font}
 ${color3}Processes:${color2} $processes${alignr}${color3}Running:${color2} $running_processes
-${color1}${font RobotoMono-Light:bold:size=9}PROCESS              CPU     MEM       PID${font}
-${color0}${font RobotoMono-Light:size=9}${top name 1}${alignr}${top cpu 1}%   ${top mem_res 1}   ${top pid 1}
+${color1}${font JetBrainsMono Nerd Font:bold:size=9}PROCESS              CPU     MEM       PID${font}
+${color0}${font JetBrainsMono Nerd Font:size=9}${top name 1}${alignr}${top cpu 1}%   ${top mem_res 1}   ${top pid 1}
 ${top name 2}${alignr}${top cpu 2}%   ${top mem_res 2}   ${top pid 2}
 ${top name 3}${alignr}${top cpu 3}%   ${top mem_res 3}   ${top pid 3}
 ${top name 4}${alignr}${top cpu 4}%   ${top mem_res 4}   ${top pid 4}
 ${top name 5}${alignr}${top cpu 5}%   ${top mem_res 5}   ${top pid 5}${font}
 
-${font Roboto-Light:bold:size=13}${color5}NETWORK ${color4}${hr 2}${font}
+${font JetBrainsMono Nerd Font:bold:size=12}${color5}NETWORK ${color4}${hr 2}${font}
 ${if_up $template0}\
 ${color3}Wireless:${color2} $template0${alignr}${color3}IP:${color2} ${addr $template0}
 ${color3}Up:${color2} ${upspeed $template0}${alignr}${color3}Down:${color2} ${downspeed $template0}

@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-exec jgmenu --simple --at-pointer --csv-file="$HOME/.config/jgmenu/prepend.csv"
+exec jgmenu --at-pointer --csv-file="$HOME/.config/jgmenu/prepend.csv"

@@ -1,0 +1,13 @@
+[Unit]
+Description=PicoClaw launcher web console
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/picoclaw-launcher -console -no-browser -host 127.0.0.1 -port 18800
+Restart=on-failure
+RestartSec=5
+Nice=5
+
+[Install]
+WantedBy=default.target

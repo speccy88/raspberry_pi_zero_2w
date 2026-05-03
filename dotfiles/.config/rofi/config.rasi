@@ -2,7 +2,7 @@ configuration {
   modi: "drun,run,window";
   show-icons: true;
   icon-theme: "Adwaita";
-  font: "Sans 10";
+  font: "JetBrainsMono Nerd Font 10";
   display-drun: "Apps";
   display-run: "Run";
   display-window: "Windows";

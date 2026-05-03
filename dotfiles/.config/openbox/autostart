@@ -1,8 +1,14 @@
 ## Tangram Openbox autostart for Raspberry Pi Zero 2 W.
 
+killall tint2 2>/dev/null || true
+pkill -f 'conky.*MX-CowonTangram-SysInfo' 2>/dev/null || true
+killall jgmenu 2>/dev/null || true
+
 nitrogen --restore &
 
 tint2 -c ~/.config/tint2/tangram.tint2rc &
+
+unclutter -idle 2 -root &
 
 sleep 2
 conky -c ~/.conky/MX-CowonTangram-SysInfo/MX-CowonTangram-SysInfo &

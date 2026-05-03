@@ -2,7 +2,7 @@
 
 > Target: Raspberry Pi Zero 2 W running Raspberry Pi OS Lite / Debian 13 "trixie" on arm64.
 > Last checked: 2026-05-03
-> Goal: a lightweight X11/Openbox desktop with a Cowon Tangram-style palette across Openbox, GTK apps, tint2, jgmenu, rofi, Dillo, mpv, Geany, PCManFM, xterm, and Conky.
+> Goal: a lightweight X11/Openbox desktop with a Cowon Tangram-style palette across Openbox, GTK apps, tint2, jgmenu, rofi, Dillo, mpv, Geany, PCManFM, LXTerminal, PicoClaw, Nerd Fonts, and Conky.
 
 This document is meant to be both a rebuild recipe and a repo map for the versioned configs. Commands assume you are logged in on the Pi as your normal user.
 
@@ -21,6 +21,7 @@ dotfiles/
     gtk-3.0/
     jgmenu/
     libfm/
+    lxterminal/
     mpv/
     nitrogen/
     openbox/
@@ -134,7 +135,7 @@ sudo apt install -y \
   nitrogen \
   feh \
   geany \
-  xterm \
+  lxterminal \
   lxappearance \
   pcmanfm \
   rofi \
@@ -143,6 +144,13 @@ sudo apt install -y \
   playerctl \
   slock \
   scrot \
+  ncdu \
+  xdotool \
+  xclip \
+  xsel \
+  unclutter \
+  fonts-jetbrains-mono \
+  fonts-firacode \
   fonts-dejavu \
   fonts-noto \
   fonts-font-awesome \
@@ -164,7 +172,8 @@ Notes:
 - `rofi` is the keyboard launcher.
 - `dillo` is the lightweight web browser.
 - `mpv` is the lightweight media player.
-- `xterm`, `geany`, and `pcmanfm` are lightweight GUI defaults.
+- `lxterminal`, `geany`, and `pcmanfm` are lightweight GUI defaults.
+- JetBrainsMono Nerd Font is installed per-user by `install.sh` for readable text and icon glyphs.
 
 ## 3. Backup Existing Desktop Config
 
@@ -261,7 +270,7 @@ If Openbox is not currently running, the reconfigure command will fail harmlessl
 Current working behavior:
 
 - Right-click on the desktop launches `~/.local/bin/tangram-menu`.
-- `tangram-menu` calls `jgmenu --simple --at-pointer --csv-file ~/.config/jgmenu/prepend.csv`, so the menu is short-lived and does not leave a resident `jgmenu` daemon in RAM.
+- `tangram-menu` calls `jgmenu --at-pointer --csv-file ~/.config/jgmenu/prepend.csv`, so the menu is short-lived and does not leave a resident `jgmenu` daemon in RAM.
 - Pointer placement is controlled by `~/.config/jgmenu/jgmenurc`.
 - Menu content is self-contained in `~/.config/jgmenu/prepend.csv`; it does not depend on BunsenLabs `bl-*` helper scripts.
 - Power menu commands use `systemctl reboot` and `systemctl poweroff`, which work from the active local desktop session through logind/polkit without adding passwordless sudo rules.
@@ -344,6 +353,8 @@ Versioned theme/config files:
 ~/.config/jgmenu/jgmenurc
 ~/.config/jgmenu/prepend.csv
 ~/.config/rofi/config.rasi
+~/.config/lxterminal/LXTerminal/lxterminal.conf
+~/.config/systemd/user/picoclaw-launcher.service
 ~/.config/geany/geany.conf
 ~/.config/geany/colorschemes/tangram.conf
 ~/.config/libfm/libfm.conf
@@ -671,15 +682,15 @@ mpv --player-operation-mode=pseudo-gui --idle=yes
 Terminal:
 
 ```bash
-xterm
+lxterminal
 ```
 
-Terminator was removed from the default setup because it can consume too much memory and freeze the Pi Zero 2 W desktop.
+Terminator and xterm were removed from the default setup. LXTerminal is readable, GTK-themed, and much lighter than Terminator while still being friendlier than plain xterm.
 
 Fonts worth keeping installed:
 
 ```bash
-sudo apt install -y fonts-dejavu fonts-noto fonts-font-awesome
+sudo apt install -y fonts-jetbrains-mono fonts-firacode fonts-dejavu fonts-noto fonts-font-awesome
 ```
 
 ## 14. Performance Notes For Pi Zero 2 W
@@ -710,7 +721,7 @@ echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swappiness.conf
 sudo sysctl --system
 ```
 
-The installer also installs `zram-tools` and sets `/etc/default/zramswap` to use about 50 percent of RAM. This gives the 416 MiB Pi Zero 2 W more breathing room without relying on slow SD-card swap.
+Raspberry Pi OS Bookworm/Trixie already provides generated zram swap on this image. Do not install `zram-tools` on top of that; it conflicts with the generated `/dev/zram0` swap and leaves `zramswap.service` failed. The installer masks `zramswap.service` and keeps the native generated zram swap instead.
 
 The installer also writes small systemd drop-ins so shutdown/reboot does not wait too long on stale GUI session scopes:
 
@@ -720,6 +731,33 @@ The installer also writes small systemd drop-ins so shutdown/reboot does not wai
 ```
 
 Those set a 10 second stop timeout and clean up user processes when the session ends. This is intentionally appliance-like behavior for a small Pi desktop.
+
+The installer disables services that are not needed for a plain SSH/Openbox desktop:
+
+```text
+avahi-daemon
+bluetooth / hciuart
+cups / cups-browsed
+NetworkManager-wait-online
+serial-getty@ttyS0
+cloud-init
+udisks2
+zramswap.service
+```
+
+It keeps SSH, NetworkManager, wpa_supplicant, dbus, systemd-logind, polkit, and time sync.
+
+PicoClaw runs as a user service:
+
+```bash
+systemctl --user status picoclaw-launcher.service
+```
+
+Dashboard:
+
+```text
+http://localhost:18800
+```
 
 List running services before disabling anything:
 
@@ -784,7 +822,7 @@ cd ~/mx-conky-data && fakeroot debian/rules clean
 3. Run `sudo apt install -y git ca-certificates`.
 4. Clone this repo.
 5. Run `./install.sh`.
-6. Start X with `startx`.
+6. Log in on tty1. `~/.profile` starts X automatically there; SSH logins remain terminal-only.
 7. Right-click the desktop for jgmenu.
 8. Use `rofi -show drun` for app launching.
 9. Use the Power submenu for log out, reboot, and power off.
@@ -854,10 +892,13 @@ Open the screenshot and confirm the first colored Conky pixels do not touch the 
 | 2026-05-02 | Base Openbox desktop | Working | Xorg, xinit, Openbox, tint2, nitrogen, jgmenu, conky-all |
 | 2026-05-02 | BunsenLabs configs | Working | `carbon` branch copied into `~/.config` |
 | 2026-05-02 | `startx` boot file | Working | `~/.xinitrc` contains `exec openbox-session` |
-| 2026-05-02 | jgmenu right-click | Working | Use `~/.local/bin/tangram-menu` with `jgmenu --simple --at-pointer` |
+| 2026-05-02 | jgmenu right-click | Working | Use `~/.local/bin/tangram-menu` with `jgmenu --at-pointer` |
 | 2026-05-02 | MX Conky theme data | Installed | `mx-conky-data`, `mx-conky-data-bin`, `mx-conky-data-themes` 20251102 |
 | 2026-05-02 | Conky Manager2 | Installed | Built from `~/conky-manager2`; binary at `/usr/bin/conky-manager2` |
 | 2026-05-02 | MX Conky Qt manager | Skipped | Build was too swap-heavy for Pi Zero 2 W; use `conky-manager2` |
-| 2026-05-03 | Tangram system theme | Working | GTK, Openbox, tint2, jgmenu, rofi, Dillo, mpv, Geany, PCManFM, xterm |
+| 2026-05-03 | Tangram system theme | Working | GTK, Openbox, tint2, jgmenu, rofi, Dillo, mpv, Geany, PCManFM, LXTerminal |
 | 2026-05-03 | Self-contained jgmenu | Working | Removed Bunsen `bl-*` helper dependencies; power menu uses `systemctl` |
 | 2026-05-03 | Clean installer | Added | `install.sh` clones/applies the repo and installs packages from a Lite base |
+| 2026-05-03 | PicoClaw launcher | Working | User service runs `picoclaw-launcher` on localhost port 18800 |
+| 2026-05-03 | Service trimming | Working | Disabled Avahi, Bluetooth, CUPS, cloud-init, serial getty, wait-online, and udisks |
+| 2026-05-03 | Console desktop start | Working | `~/.profile` starts `startx` only on `/dev/tty1` |

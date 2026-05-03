@@ -1,5 +1,5 @@
 gtk-theme-name="Tangram"
 gtk-icon-theme-name="Adwaita"
-gtk-font-name="Sans 10"
+gtk-font-name="JetBrainsMono Nerd Font 10"
 gtk-cursor-theme-name="DMZ-White"
 include ".themes/Tangram/gtk-2.0/gtkrc"

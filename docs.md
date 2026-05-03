@@ -753,6 +753,12 @@ PicoClaw runs as a user service:
 systemctl --user status picoclaw-launcher.service
 ```
 
+The installer enables linger for the installing user so this user service can start at boot:
+
+```bash
+sudo loginctl enable-linger "$USER"
+```
+
 Dashboard:
 
 ```text
@@ -899,6 +905,6 @@ Open the screenshot and confirm the first colored Conky pixels do not touch the 
 | 2026-05-03 | Tangram system theme | Working | GTK, Openbox, tint2, jgmenu, rofi, Dillo, mpv, Geany, PCManFM, LXTerminal |
 | 2026-05-03 | Self-contained jgmenu | Working | Removed Bunsen `bl-*` helper dependencies; power menu uses `systemctl` |
 | 2026-05-03 | Clean installer | Added | `install.sh` clones/applies the repo and installs packages from a Lite base |
-| 2026-05-03 | PicoClaw launcher | Working | User service runs `picoclaw-launcher` on localhost port 18800 |
+| 2026-05-03 | PicoClaw launcher | Working | User service runs `picoclaw-launcher` on localhost port 18800 with linger enabled |
 | 2026-05-03 | Service trimming | Working | Disabled Avahi, Bluetooth, CUPS, cloud-init, serial getty, wait-online, and udisks |
 | 2026-05-03 | Console desktop start | Working | `~/.profile` starts `startx` only on `/dev/tty1` |

@@ -130,6 +130,7 @@ sudo systemctl mask \
   cloud-init-main.service cloud-init-hotplugd.socket cloud-init.target \
   zramswap.service >/dev/null 2>&1 || true
 sudo systemctl reset-failed zramswap.service >/dev/null 2>&1 || true
+sudo loginctl enable-linger "$USER" >/dev/null 2>&1 || true
 
 systemctl --user daemon-reload || true
 systemctl --user enable --now picoclaw-launcher.service >/dev/null 2>&1 || true

@@ -1,169 +1,63 @@
-# BunsenLabs Main Menu
+# Tangram jgmenu. Commands intentionally avoid BunsenLabs helper scripts so
+# the menu works on a clean Raspberry Pi OS Lite install.
 
-## Bunsenlabs User config files
-## All default BunsenLabs user config files are located in /usr/share/bunsen/skel.
-## The script bl-user-setup copies them to the user $HOME directory on first login.
-## See more info with command 'bl-user-setup --help'
-
-## This is the config file of the static part of jgmenu, and
-## also specifies other parts which are dynamically generated
-## like pipemenus and the 'All Applications' item.
-## If you wish to add items to the menu then this is the place to do that.
-## See: https://forums.bunsenlabs.org/viewtopic.php?id=6512
-## and: https://forums.bunsenlabs.org/viewforum.php?id=25
-
-@text,,6,6,150,20,2,left,top,auto,#000000 0,<span size="large">🔍︎</span>
-@search,,24,3,150,20,2,left,top,auto,#000000 0,Type to Search
+@text,,8,7,250,22,2,left,top,auto,#000000 0,<span foreground="#DB0085" weight="bold">Tangram</span>
+@search,,78,6,220,22,2,left,top,auto,#000000 0,Search
 
 ^sep()
-Run Program,gmrun,system-run
+Terminal,terminator,utilities-terminal
+Files,pcmanfm,system-file-manager
+Editor,geany,accessories-text-editor
+Browser,dillo,web-browser
+Media Player,mpv --player-operation-mode=pseudo-gui --idle=yes,applications-multimedia
+Run,rofi -show drun,system-run
 ^sep()
-Terminal,x-terminal-emulator,utilities-terminal
-Web Browser,x-www-browser,applications-internet
-File Manager,bl-file-manager,system-file-manager
-Text Editor,bl-text-editor,accessories-text-editor
-Media Player,bl-media-player,multimedia-player
-^sep()
-Quick Screenshot+Upload,bl-image-upload,camera-photo
-^sep()
-Utilities,^checkout(bl-utilities),system-run
-Places,^pipe(jgmenu_run ob --cmd="bl-places-pipemenu" --tag="bl-places-pipemenu"),folder
-Recent Files,^pipe(jgmenu_run ob --cmd="bl-recent-files-pipemenu -rl15" --tag="bl-recent-files-pipemenu"),emblem-favorite
-^sep()
-User Settings,^checkout(bl-user-settings),preferences-desktop
-System Settings,^checkout(bl-system-settings),applications-system
-^sep()
-Help &amp; Resources,^checkout(bl-help-menu),help-contents
+Utilities,^checkout(utilities),applications-utilities
+User Settings,^checkout(user-settings),preferences-desktop
+System Settings,^checkout(system-settings),preferences-system
+Power,^checkout(power),system-shutdown
 ^sep()
 All Applications,^checkout(apps),applications-other
-^sep()
-Lock Screen,bl-lock,system-lock-screen
-Exit,bl-exit,system-shutdown
 
-. /usr/share/bunsen/docs/menu-includes/help-menu
-
-^tag(bl-utilities)
+^tag(utilities)
 Back,^back()
-App Finder,xfce4-appfinder --disable-server,org.xfce.appfinder
-Catfish File Finder,catfish,org.xfce.catfish
-Take Screenshot,^pipe(bl-scrot-pipemenu),camera-photo
-SSH,^pipe(jgmenu_run ob --cmd="bl-sshconfig-pipemenu" --tag="bl-sshconfig-pipemenu"),folder-remote-ssh
-Remote Desktop,^pipe(jgmenu_run ob --cmd="bl-remote-desktop-pipemenu" --tag="bl-remote-desktop-pipemenu"),folder-remote
-# These two utilities are available if you uncomment the line.
-# Pipe menu to install and use Dropbox (needs debugging for Carbon):
-#Dropbox,^pipe(jgmenu_run ob --cmd="bl-dropbox-pipemenu" --tag="bl-dropbox-pipemenu"),dropbox
-# Utility to set language if login greeter does not offer that option:
-#Choose Language,bl-setlocale,locale
+Rofi Launcher,rofi -show drun,system-run
+Rofi Window Switcher,rofi -show window,preferences-system-windows
+Task Manager,terminator -T htop -e htop,utilities-system-monitor
+Screenshot,sh -c 'mkdir -p "$HOME/Pictures/Screenshots"; scrot "$HOME/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png"',camera-photo
+File Search,rofi -show find -modi find:~/.local/bin/tangram-rofi-find,edit-find
+Network Info,terminator -T "Network Info" -e sh -c "ip -br addr; printf '\\nPress Enter to close '; read",network-workgroup
+Disk Usage,terminator -T "Disk Usage" -e sh -c "df -h; printf '\\nPress Enter to close '; read",drive-harddisk
 
-^tag(bl-user-settings)
+^tag(user-settings)
 Back,^back()
-BunsenLabs Session,^checkout(bl-blConfig),distributor-logo-bunsenlabs
-Openbox,^checkout(bl-obConfig),openbox
-jgmenu,^checkout(bl-jgmenuConfig),jgmenu
-#Tint2,^pipe(jgmenu_run ob --cmd="bl-tint2-pipemenu" --tag="bl-tint2-pipemenu"),tint2
-xfce4-panel,^checkout(bl-xfce4panelConfig),xfce4-panel
-Keybinds,^checkout(bl-xbindkeysConfig),preferences-desktop-keyboard
-Compositor,^pipe(jgmenu_run ob --cmd="bl-compositor" --tag="bl-compositor"),picom
-Conky,^pipe(jgmenu_run ob --cmd="bl-conky-pipemenu" --tag="bl-conky-pipemenu"),conky-manager
-BLOB Themes Manager,bl-obthemes,distributor-logo-bunsenlabs
-Appearance,sh -c 'nwg-look; bl-reload-gtk23',preferences-desktop-theme
-Reload GTK,bl-reload-gtk23,preferences-desktop-theme
-Font configuration,bl-text-editor ~/.config/fontconfig/fonts.conf,preferences-desktop-font
-Wallpaper,xwwall,preferences-desktop-wallpaper
-Notifications,xfce4-notifyd-config,org.xfce.notification
-Power Management,xfce4-power-manager-settings,xfce4-power-manager-settings
-dmenu,^checkout(bl-dmenuconfig),applications-development
-gmrun,^checkout(bl-gmrunconfig),gmrun
-Display settings,^checkout(bl-DisplaySettings),video-display
-Network Connections,nm-connection-editor,preferences-system-network
+Appearance,lxappearance,preferences-desktop-theme
+Openbox Settings,obconf,openbox
+Edit Openbox rc.xml,geany ~/.config/openbox/rc.xml,accessories-text-editor
+Edit Openbox autostart,geany ~/.config/openbox/autostart,accessories-text-editor
+Edit jgmenu,geany ~/.config/jgmenu/prepend.csv,accessories-text-editor
+Edit tint2,geany ~/.config/tint2/tangram.tint2rc,accessories-text-editor
+Edit Conky,geany ~/.conky/MX-CowonTangram-SysInfo/MX-CowonTangram-SysInfo,accessories-text-editor
+Wallpaper,nitrogen ~/Pictures ~/wallpapers,preferences-desktop-wallpaper
+Reload Openbox,openbox --reconfigure,view-refresh
+Restart tint2,sh -c 'killall tint2 2>/dev/null; tint2 -c ~/.config/tint2/tangram.tint2rc &',view-refresh
+Restart Conky,sh -c 'pkill -f "conky.*MX-CowonTangram-SysInfo" 2>/dev/null; cd ~/.conky/MX-CowonTangram-SysInfo && conky -c ./MX-CowonTangram-SysInfo &',view-refresh
 
-^tag(bl-blConfig)
+^tag(system-settings)
 Back,^back()
-Edit autostart,bl-text-editor ~/.config/bunsen/autostart
-Edit environment,bl-text-editor ~/.config/bunsen/environment
-^sep()
-^sep(Manuals)
-bunsenlabs-session,x-terminal-emulator -T 'man bunsenlabs-session' -e man bunsenlabs-session
-xdg-autostart,x-terminal-emulator -T 'man bl-xdg-autostart' -e man bl-xdg-autostart
+System Info,terminator -T "System Info" -e sh -c "hostnamectl; printf '\\n'; free -h; printf '\\n'; df -h /; printf '\\nPress Enter to close '; read",computer
+Processes,terminator -T htop -e htop,utilities-system-monitor
+Package Update,terminator -T "APT Update" -e sh -c "sudo apt update; printf '\\nPress Enter to close '; read",system-software-update
+Upgrade Packages,terminator -T "APT Upgrade" -e sh -c "sudo apt full-upgrade; printf '\\nPress Enter to close '; read",system-software-update
+Raspberry Pi Config,terminator -T raspi-config -e sudo raspi-config,preferences-system
+Services,terminator -T "Running Services" -e sh -c "systemctl --type=service --state=running --no-pager; printf '\\nPress Enter to close '; read",preferences-system-services
+Journal Errors,terminator -T "Journal Errors" -e sh -c "journalctl -p 3 -xb --no-pager; printf '\\nPress Enter to close '; read",dialog-warning
 
-^tag(bl-obConfig)
+^tag(power)
 Back,^back()
-obconf - GUI Config Tool,obconf --config-file ~/.config/bunsen/openbox/rc.xml
-^sep()
-Edit rc.xml,bl-text-editor ~/.config/bunsen/openbox/rc.xml
-^sep()
-Reconfigure,openbox --reconfigure
-Restart,openbox --restart
-
-^tag(bl-jgmenuConfig)
-Back,^back()
-Edit Menu Content,bl-text-editor ~/.config/jgmenu/prepend.csv
-Edit Menu Settings,bl-text-editor ~/.config/jgmenu/jgmenurc
-^sep()
-Sync theme with OpenBox,JGMENU_RCXML=~/.config/bunsen/openbox/rc.xml jgmenu_run init --apply-obtheme
-#Sync theme with GTK3,jgmenu_run init --apply-gtktheme
-^sep(Help)
-man page,x-terminal-emulator -T 'man jgmenu' -e man jgmenu
-tutorial,x-terminal-emulator -T 'man jgmenututorial' -e man jgmenututorial
-
-^tag(bl-xfce4panelConfig)
-Back,^back()
-xfce4-panel Preferences,xfce4-panel -p
-xfce4-panel Profiles,xfce4-panel-profiles
-man xfce4-panel,x-terminal-emulator -T 'man xfce4-panel' -e man xfce4-panel
-
-^tag(bl-xbindkeysConfig)
-Back,^back()
-Display Keybinds in menu, ^pipe(jgmenu_run ob --cmd="bl-kb-pipemenu --kbmenu" --tag="bl-kb-pipemenu-kbmenu")
-Display Keybinds in new window,bl-kb-pipemenu --gui
-^sep()
-Backup and Edit openbox rc file,bl-kb-pipemenu --rcedit
-Backup and Edit .xbindkeysrc,bl-kb-pipemenu --xbkedit
-Reconfigure openbox,openbox --reconfigure
-Restart xbindkeys,sh -c 'pkill -x xbindkeys; xbindkeys_autostart'
-#^sep()
-# Next entry requires tk
-#Show Keybinds,xbindkeys_show
-^sep(Help)
-man xbindkeys,x-terminal-emulator -T 'man xbindkeys' -e man xbindkeys
-
-^tag(bl-dmenuconfig)
-Back,^back()
-Edit Start-up Script,bl-text-editor ~/.config/dmenu/dmenu-bind.sh
-^sep(Help)
-man page,x-terminal-emulator -T 'man dmenu' -e man dmenu
-
-^tag(bl-gmrunconfig)
-Back,^back()
-Edit Config File,bl-text-editor ~/.gmrunrc
-^sep(Help)
-man page,x-terminal-emulator -T 'man gmrun' -e man gmrun
-
-^tag(bl-DisplaySettings)
-Back,^back()
-#ARandR Screen Layout Editor,arandr
-Lxrandr Display Settings Editor,lxrandr.wrapper
-^sep(Help)
-How To Set Screen Resolution,x-www-browser "https://forums.bunsenlabs.org/viewtopic.php?pid=117065#p117065",help-contents
-man xrandr,x-terminal-emulator -T 'man xrandr' -e man xrandr
-
-^tag(bl-system-settings)
-Back,^back()
-inxi - Quick System Info,x-terminal-emulator -T 'inxi system info  (Q to close)' -e bash -c "inxi -e -m -d -J -l -o -p -r -u -xxx -z -c 2 | less -R",applications-development
-Hardinfo GUI system profiler,hardinfo,applications-development
-BunsenLabs Install Info,x-terminal-emulator -T 'BunsenLabs install info (Q to close)' -e less '/etc/bunsen/bunsen_install',distributor-logo-bunsenlabs
-^sep()
-Printers,^pipe(jgmenu_run ob --cmd="bl-printing-pipemenu" --tag="bl-printing-pipemenu"),printer
-Task Manager (htop),x-terminal-emulator -T 'htop task manager' -e htop,htop
-Install Favourite Packages,^pipe(bl-install-pipemenu),synaptic
-Synaptic Package Manager,sh -c 'pkexec.wrapper synaptic',synaptic
-Login Settings,sudoedit.wrapper /etc/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/lightdm.conf,lightdm-settings
-Login Interface,lightdm-gtk-greeter-settings-pkexec,lightdm-settings
-Show Lightdm Config,x-terminal-emulator -T 'Lightdm Config' -e bash -c "lightdm --show-config; printf '\n%s' 'Press any key to close'; read -srn1",lightdm-settings
-GParted Partition Manager,sh -c 'pkexec.wrapper gparted',gparted
-Set Default Browser,"""x-terminal-emulator -T 'Select Default Browser' -e sh -c 'sudo update-alternatives --config x-www-browser; sleep 5'""",applications-internet
-Edit Debian Alternatives,galternatives,galternatives
-^sep()
-About Bunsen Alternatives,yad --button="OK":0 --center --window-icon=distributor-logo-bunsenlabs --text-info --title="About Bunsen Alternatives" --filename="/usr/share/bunsen/docs/helpfiles/helpfile-bl-alternatives.txt" --width=900 --height=700 --fontname=Monospace,distributor-logo-bunsenlabs
+Lock,sh -c 'command -v slock >/dev/null && slock || command -v xlock >/dev/null && xlock || true',system-lock-screen
+Log Out,openbox --exit,system-log-out
+Reboot,systemctl reboot,system-reboot
+Power Off,systemctl poweroff,system-shutdown
 
 ^tag(apps)

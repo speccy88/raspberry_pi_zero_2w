@@ -27,10 +27,10 @@ conky.config = {
 	uppercase = false,
 	use_spacer = 'left',
 
-	alignment = 'bottom_right',
+	alignment = 'top_right',
 	gap_x = 45,
-	gap_y = 30,
-	minimum_width = 340, minimum_height = 860,
+	gap_y = 28,
+	minimum_width = 340, minimum_height = 760,
 	maximum_width = 340,
 
 	draw_shades = false,
@@ -75,12 +75,12 @@ if os.execute('pidof -q fluxbox') and not os.execute('pidof -q picom') then
 end
 
 conky.text = [[
-${voffset 190}
-${font Roboto-Light:size=100}${color5}${time %H}
-${color2}${offset 40}${voffset -100}${time %M}
-${voffset -140}${offset 10}${font Roboto-Light:bold:size=12}${color1}${time %A   %B %d}
-${offset 150}${voffset -175}${font Roboto-Light:size=12}${color2}${if_match "pmfix${time %p}" == "pmfix"}${else}${time %p}${endif}
-${voffset 175}
+${voffset 12}
+${font Roboto-Light:size=82}${color5}${time %H}
+${color2}${offset 34}${voffset -82}${time %M}
+${voffset -116}${offset 8}${font Roboto-Light:bold:size=11}${color1}${time %A   %B %d}
+${offset 132}${voffset -145}${font Roboto-Light:size=11}${color2}${if_match "pmfix${time %p}" == "pmfix"}${else}${time %p}${endif}
+${voffset 148}
 ${font Roboto-Light:bold:size=13}${color5}SYSTEM INFORMATION ${color4}${hr 2}${font}
 ${color3}OS:${color0} ${execi 86400 sh -c '. /etc/os-release && printf "%s" "$PRETTY_NAME"'}
 ${color3}Host:${color2} $nodename${color0}${alignr}${color3}Arch:${color2} $machine
@@ -91,18 +91,18 @@ ${color3}Uptime:${color2} $uptime
 ${font Roboto-Light:bold:size=13}${color5}CPU ${color4}${hr 2}${font}
 ${color0}${execi 86400 sh -c 'tr -d "\0" </proc/device-tree/model 2>/dev/null || awk -F": " "/model name|Hardware|Model/ {print \\$2; exit}" /proc/cpuinfo'}
 ${color3}Load:${color2} ${loadavg 1} ${color1}${alignr}${color3}Freq:${color2} ${freq_g} GHz
-${color3}CPU:${color2} ${cpu cpu0}% ${lua gradbar {78, 545, "${cpu cpu0}", 100, 42, 2, 10, 1, 0x1d1d1d, 0.35, 0xA0F000, 1, 0xFFFF00, 1, 0xDB0085, 1}}
+${color3}CPU:${color2} ${cpu cpu0}% ${lua gradbar {78, 361, "${cpu cpu0}", 100, 42, 2, 10, 1, 0x1d1d1d, 0.35, 0xA0F000, 1, 0xFFFF00, 1, 0xDB0085, 1}}
 ${color3}Temp:${color2} ${execi 5 sh -c 'if [ -r /sys/class/thermal/thermal_zone0/temp ]; then raw=$(cat /sys/class/thermal/thermal_zone0/temp); printf "%s.%s" "$((raw / 1000))" "$(((raw % 1000) / 100))"; else printf "n/a"; fi'}${color0}°C
 
 ${font Roboto-Light:bold:size=13}${color5}MEMORY ${color4}${hr 2}${font}
 ${color3}RAM:${color2} $mem ${color1}/ $memmax${alignr}${color4}${memperc}%
-${lua gradbar {6, 629, "${memperc}", 100, 54, 2, 10, 1, 0x1d1d1d, 0.35, 0xA0F000, 1, 0xFFFF00, 1, 0xDB0085, 1}}
+${lua gradbar {6, 445, "${memperc}", 100, 54, 2, 10, 1, 0x1d1d1d, 0.35, 0xA0F000, 1, 0xFFFF00, 1, 0xDB0085, 1}}
 ${color3}Swap:${color2} $swap ${color1}/ $swapmax${alignr}${color4}${swapperc}%
-${lua gradbar {6, 661, "${swapperc}", 100, 54, 2, 10, 1, 0x1d1d1d, 0.35, 0x54D8FC, 1, 0xFFFF00, 1, 0xDB0085, 1}}
+${lua gradbar {6, 477, "${swapperc}", 100, 54, 2, 10, 1, 0x1d1d1d, 0.35, 0x54D8FC, 1, 0xFFFF00, 1, 0xDB0085, 1}}
 
 ${font Roboto-Light:bold:size=13}${color5}DISK ${color4}${hr 2}${font}
 ${color3}Root:${color2} ${fs_used /} ${color1}/ ${fs_size /}${alignr}${color4}${fs_used_perc /}%
-${lua gradbar {6, 721, "${fs_used_perc /}", 100, 54, 2, 10, 1, 0x1d1d1d, 0.35, 0xA0F000, 1, 0xFFFF00, 1, 0xDB0085, 1}}
+${lua gradbar {6, 537, "${fs_used_perc /}", 100, 54, 2, 10, 1, 0x1d1d1d, 0.35, 0xA0F000, 1, 0xFFFF00, 1, 0xDB0085, 1}}
 ${color3}I/O:${color2} read ${diskio_read}${alignr}write ${diskio_write}
 
 ${font Roboto-Light:bold:size=13}${color5}PROCESSES & LOAD ${color4}${hr 2}${font}

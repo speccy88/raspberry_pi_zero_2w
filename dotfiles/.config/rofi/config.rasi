@@ -1,0 +1,38 @@
+configuration {
+  modi: "drun,run,window";
+  show-icons: true;
+  icon-theme: "Adwaita";
+  font: "Sans 10";
+  display-drun: "Apps";
+  display-run: "Run";
+  display-window: "Windows";
+}
+
+* {
+  bg: #111318f2;
+  panel: #151922ff;
+  fg: #ffffffff;
+  muted: #ccccccff;
+  magenta: #DB0085ff;
+  cyan: #54D8FCff;
+  green: #A0F000ff;
+  yellow: #FFFF00ff;
+}
+
+window {
+  width: 46%;
+  border: 1px;
+  border-color: @magenta;
+  background-color: @bg;
+}
+
+mainbox { padding: 8px; background-color: transparent; }
+inputbar { padding: 8px; background-color: @panel; children: [prompt, entry]; }
+prompt { text-color: @magenta; padding: 0 8px 0 0; }
+entry { text-color: @fg; placeholder-color: @muted; }
+listview { lines: 10; columns: 1; fixed-height: true; spacing: 2px; padding: 8px 0 0; }
+element { padding: 7px 8px; background-color: transparent; text-color: @fg; }
+element selected { background-color: @magenta; text-color: @fg; }
+element-icon { size: 18px; padding: 0 8px 0 0; }
+element-text { text-color: inherit; }
+message { padding: 8px; text-color: @yellow; }

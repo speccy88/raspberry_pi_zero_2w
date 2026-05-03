@@ -1,34 +1,3 @@
-/* uncomment the code below to enable steppers in gtk3 apps */
-/* (see ~/.gtkrc-2.0.mine for gtk2) */
+@import url("../../.themes/Tangram/gtk-3.0/gtk.css");
 
-/*
-.scrollbar, .scrollbar.vertical {
--GtkRange-stepper-size: 13;
--GtkScrollbar-has-backward-stepper: 1;
--GtkScrollbar-has-forward-stepper: 1;
-}
-*/
-
-/* end of stepper code */
-
-/* padding for lxterminal and some others */
 VteTerminal, vte-terminal { padding: 5px; }
-
-/* xfce4-panel settings */
-
-/* GTK round corners need composition to work correctly
-but provide more flexibility than Picom */
-/*
-.xfce4-panel.panel-1#XfcePanelWindow {
-    border-radius: 10px;
-}
-*/
-
-/* some buttons are too big */
-
-#pulseaudio-button * { -gtk-icon-transform: scale(0.6); }
-
-#xfce4-power-manager-plugin * { -gtk-icon-transform: scale(0.4); }
-
-#battery-14 * { -gtk-icon-transform: scale(0.6); }
-/* adjust the "#14" to match the widget ID of your battery plugin */

@@ -1,0 +1,67 @@
+@define-color bg #111318;
+@define-color panel #151922;
+@define-color fg #ffffff;
+@define-color muted #cccccc;
+@define-color magenta #DB0085;
+@define-color cyan #54D8FC;
+@define-color green #A0F000;
+@define-color yellow #FFFF00;
+
+* {
+  color: @fg;
+  background-clip: padding-box;
+  -GtkToolButton-icon-spacing: 4;
+  -GtkTextView-error-underline-color: @magenta;
+}
+
+window, dialog, popover, menu, .background {
+  background-color: @bg;
+  color: @fg;
+}
+
+headerbar, toolbar, menubar, .titlebar {
+  background-color: @panel;
+  color: @fg;
+  border-color: @magenta;
+}
+
+button, entry, spinbutton, combobox, treeview, notebook tab {
+  background-color: @panel;
+  color: @fg;
+  border: 1px solid alpha(@cyan, 0.45);
+  border-radius: 0;
+}
+
+button:hover, menuitem:hover, row:selected, treeview:selected {
+  background-color: @magenta;
+  color: @fg;
+}
+
+button:checked, button:active {
+  background-color: @cyan;
+  color: @bg;
+}
+
+entry:focus, textview text:focus {
+  border-color: @magenta;
+}
+
+scrollbar slider {
+  background-color: @magenta;
+  border-radius: 0;
+  min-width: 8px;
+  min-height: 8px;
+}
+
+scrollbar trough {
+  background-color: @panel;
+}
+
+progressbar progress, scale highlight {
+  background-color: @green;
+}
+
+selection, *:selected {
+  background-color: @magenta;
+  color: @fg;
+}

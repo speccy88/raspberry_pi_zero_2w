@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+find "$HOME" -maxdepth 4 -type f 2>/dev/null | sed "s#^$HOME/##"

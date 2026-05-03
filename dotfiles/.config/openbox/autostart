@@ -1,33 +1,8 @@
-## Openbox autostart
-## ====================
-## When BunsenLabs is launched from bunsenlabs-session this file is ignored.
-## BunsenLabs now uses ~/.config/bunsen/autostart,
-## executed via /usr/lib/bunsen/config/bunsen-autostart.
-## See 'man bunsenlabs-session' for more details.
-##
-## When you launch Openbox with openbox-session, this script will be
-## executed by openbox, and can be used to launch startup applications.
-##
-## Note: some programs, such as 'nm-applet' are run via XDG autostart.
-## Run
-## /usr/lib/x86_64-linux-gnu/openbox-xdg-autostart --list
-## or
-## /usr/lib/i386-linux-gnu/openbox-xdg-autostart --list
-## to list any XDG autostarted programs.
-##
-## More information about this can be found at:
-## https://openbox.org/help/Contents#Custom_Desktop_Environments
-##
+## Tangram Openbox autostart for Raspberry Pi Zero 2 W.
 
-# Wallpaper
 nitrogen --restore &
 
-# Panel
-tint2 &
+tint2 -c ~/.config/tint2/tangram.tint2rc &
 
-# Conky
-conky -c ~/.conky/MX-CoreBlue/MX-CoreBlue.conkyrc &
-
-# jgmenu (triggered via right-click in Openbox)
-# jgmenu_run &
-
+sleep 2
+conky -c ~/.conky/MX-CowonTangram-SysInfo/MX-CowonTangram-SysInfo &

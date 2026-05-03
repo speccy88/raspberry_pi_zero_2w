@@ -1,0 +1,17 @@
+body {
+  background: #111318;
+  color: #ffffff;
+  font-family: sans-serif;
+}
+
+a { color: #54D8FC; }
+a:visited { color: #DB0085; }
+pre, code {
+  background: #151922;
+  color: #A0F000;
+}
+input, textarea, select, button {
+  background: #151922;
+  color: #ffffff;
+  border: 1px solid #54D8FC;
+}

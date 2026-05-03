@@ -1,0 +1,16 @@
+gtk-color-scheme = "bg_color:#111318\nfg_color:#ffffff\nbase_color:#151922\ntext_color:#ffffff\nselected_bg_color:#DB0085\nselected_fg_color:#ffffff\ntooltip_bg_color:#111318\ntooltip_fg_color:#54D8FC"
+gtk-theme-name = "Tangram"
+style "tangram-default" {
+  bg[NORMAL] = "#111318"
+  bg[PRELIGHT] = "#DB0085"
+  bg[ACTIVE] = "#54D8FC"
+  bg[SELECTED] = "#DB0085"
+  fg[NORMAL] = "#ffffff"
+  fg[PRELIGHT] = "#ffffff"
+  fg[ACTIVE] = "#111318"
+  fg[SELECTED] = "#ffffff"
+  base[NORMAL] = "#151922"
+  text[NORMAL] = "#ffffff"
+  engine "pixmap" {}
+}
+class "*" style "tangram-default"

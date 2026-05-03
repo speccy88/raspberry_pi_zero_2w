@@ -1,8 +1,8 @@
 # Raspberry Pi Zero 2 W Lite Rice Runbook
 
 > Target: Raspberry Pi Zero 2 W running Raspberry Pi OS Lite / Debian 13 "trixie" on arm64.
-> Last checked: 2026-05-02
-> Goal: a lightweight X11/Openbox desktop with BunsenLabs-style configs, tint2, jgmenu, nitrogen, and MX Linux Conky themes.
+> Last checked: 2026-05-03
+> Goal: a lightweight X11/Openbox desktop with a Cowon Tangram-style palette across Openbox, GTK apps, tint2, jgmenu, rofi, Dillo, mpv, Geany, PCManFM, Terminator, and Conky.
 
 This document is meant to be both a rebuild recipe and a repo map for the versioned configs. Commands assume you are logged in on the Pi as your normal user.
 
@@ -20,16 +20,33 @@ dotfiles/
     fontconfig/
     gtk-3.0/
     jgmenu/
+    libfm/
+    mpv/
     nitrogen/
     openbox/
+    pcmanfm/
+    rofi/
     terminator/
     tint2/
+  .dillo/
+  .themes/Tangram/
 themes/
   conky/
     MX-CowonTangram-SysInfo/
+install.sh
 ```
 
-Apply the checked-in dotfiles after cloning this repo on the Pi:
+Fast install from a clean Raspberry Pi OS Lite / Debian Lite image:
+
+```bash
+sudo apt update
+sudo apt install -y git ca-certificates
+git clone https://github.com/speccy88/raspberry_pi_zero_2w.git ~/raspberry_pi_zero_2w
+cd ~/raspberry_pi_zero_2w
+./install.sh
+```
+
+Apply only the checked-in dotfiles after cloning this repo on an already configured Pi:
 
 ```bash
 cd ~/raspberry_pi_zero_2w
@@ -121,6 +138,12 @@ sudo apt install -y \
   terminator \
   lxappearance \
   pcmanfm \
+  rofi \
+  dillo \
+  mpv \
+  playerctl \
+  slock \
+  scrot \
   fonts-dejavu \
   fonts-noto \
   fonts-font-awesome \
@@ -139,6 +162,9 @@ Notes:
 - `jgmenu` is the right-click app menu.
 - `nitrogen` restores wallpaper.
 - `conky-all` is the Conky runtime used by MX Conky themes.
+- `rofi` is the keyboard launcher.
+- `dillo` is the lightweight web browser.
+- `mpv` is the lightweight media player.
 - `terminator`, `geany`, and `pcmanfm` are friendly lightweight GUI defaults.
 
 ## 3. Backup Existing Desktop Config
@@ -214,16 +240,12 @@ Recommended safe autostart for the Pi Zero 2 W:
 mkdir -p ~/.config/openbox
 
 cat > ~/.config/openbox/autostart <<'EOF'
-# Restore wallpaper chosen in nitrogen.
 nitrogen --restore &
 
-# Lightweight panel/taskbar.
-tint2 &
+tint2 -c ~/.config/tint2/tangram.tint2rc &
 
-# Desktop system monitor.
-conky &
-
-# jgmenu is opened on right-click, not started here.
+sleep 2
+conky -c ~/.conky/MX-CowonTangram-SysInfo/MX-CowonTangram-SysInfo &
 EOF
 ```
 
@@ -242,17 +264,15 @@ Current working behavior:
 - Right-click on the desktop launches `jgmenu_run`.
 - `jgmenu_run` should be called with no arguments.
 - Pointer placement is controlled by `~/.config/jgmenu/jgmenurc`.
+- Menu content is self-contained in `~/.config/jgmenu/prepend.csv`; it does not depend on BunsenLabs `bl-*` helper scripts.
+- Power menu commands use `systemctl reboot` and `systemctl poweroff`, which work from the active local desktop session through logind/polkit without adding passwordless sudo rules.
 
 Create/update jgmenu config:
 
 ```bash
 mkdir -p ~/.config/jgmenu
 
-cat > ~/.config/jgmenu/jgmenurc <<'EOF'
-position_mode = pointer
-stay_alive = 1
-csv_cmd = apps
-EOF
+cp -a ~/raspberry_pi_zero_2w/dotfiles/.config/jgmenu ~/.config/
 ```
 
 Patch every Openbox right-click desktop binding to run `jgmenu_run`:
@@ -305,7 +325,53 @@ killall jgmenu || true
 rm -f ~/.jgmenu-lockfile
 ```
 
-## 8. tint2 Panel
+## 8. Tangram Theme Coverage
+
+The Tangram palette used across the desktop is:
+
+```text
+background: #111318
+panel:      #151922
+magenta:    #DB0085
+cyan:       #54D8FC
+green:      #A0F000
+yellow:     #FFFF00
+white:      #FFFFFF
+muted:      #CCCCCC
+```
+
+Versioned theme/config files:
+
+```text
+~/.themes/Tangram/openbox-3/themerc
+~/.themes/Tangram/gtk-3.0/gtk.css
+~/.themes/Tangram/gtk-2.0/gtkrc
+~/.gtkrc-2.0
+~/.config/gtk-3.0/settings.ini
+~/.config/tint2/tangram.tint2rc
+~/.config/jgmenu/jgmenurc
+~/.config/jgmenu/prepend.csv
+~/.config/rofi/config.rasi
+~/.config/terminator/config
+~/.config/geany/geany.conf
+~/.config/geany/colorschemes/tangram.conf
+~/.config/libfm/libfm.conf
+~/.config/pcmanfm/default/pcmanfm.conf
+~/.dillo/dillorc
+~/.dillo/style.css
+~/.config/mpv/mpv.conf
+```
+
+Apply/reload:
+
+```bash
+cp -a ~/raspberry_pi_zero_2w/dotfiles/. ~/
+openbox --reconfigure
+killall tint2 2>/dev/null || true
+tint2 -c ~/.config/tint2/tangram.tint2rc &
+```
+
+## 9. tint2 Panel
 
 Config directory:
 
@@ -333,20 +399,20 @@ lithium.tint2rc
 yeti.tint2rc
 ```
 
-Run a specific tint2 config:
+Run the Tangram tint2 config:
 
 ```bash
 killall tint2 || true
-tint2 -c ~/.config/tint2/lithium.tint2rc &
+tint2 -c ~/.config/tint2/tangram.tint2rc &
 ```
 
 Make that the default by editing `~/.config/openbox/autostart`:
 
 ```bash
-tint2 -c ~/.config/tint2/lithium.tint2rc &
+tint2 -c ~/.config/tint2/tangram.tint2rc &
 ```
 
-## 9. Wallpaper With nitrogen
+## 10. Wallpaper With nitrogen
 
 Create a wallpaper folder:
 
@@ -366,7 +432,7 @@ Choose a wallpaper and save it. Openbox autostart restores it with:
 nitrogen --restore &
 ```
 
-## 10. Conky Basics
+## 11. Conky Basics
 
 Conky runtime is installed from Debian:
 
@@ -395,7 +461,7 @@ Conky config locations to know:
 /usr/share/mx-conky-data/
 ```
 
-## 11. Conky Manager2 And MX Theme Data
+## 12. Conky Manager2 And MX Theme Data
 
 `conky-manager2` is the installed GUI manager for Conky configs. The MX Linux `mx-conky-data` packages are also installed so their themes can be used as source material.
 
@@ -579,7 +645,7 @@ pkill -f 'conky.*MX-CowonTangram-SysInfo'
 
 The Qt6 `mx-conky` manager can be built from `~/mx-conky`, but it is heavy for the Pi Zero 2 W. A parallel build caused heavy swapping on the 416 MiB system, so the manager build was stopped intentionally. Use `conky-manager2` as the GUI manager instead.
 
-## 12. Appearance Tools
+## 13. Appearance Tools
 
 GTK theme and icon theme:
 
@@ -591,6 +657,24 @@ Openbox theme:
 
 ```bash
 obconf
+```
+
+Launcher:
+
+```bash
+rofi -show drun
+```
+
+Browser:
+
+```bash
+dillo
+```
+
+Media player:
+
+```bash
+mpv --player-operation-mode=pseudo-gui --idle=yes
 ```
 
 Terminator preferences:
@@ -605,7 +689,7 @@ Fonts worth keeping installed:
 sudo apt install -y fonts-dejavu fonts-noto fonts-font-awesome
 ```
 
-## 13. Performance Notes For Pi Zero 2 W
+## 14. Performance Notes For Pi Zero 2 W
 
 The Pi has about 416 MiB usable RAM, so keep startup sparse.
 
@@ -633,6 +717,8 @@ echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swappiness.conf
 sudo sysctl --system
 ```
 
+The installer also installs `zram-tools` and sets `/etc/default/zramswap` to use about 50 percent of RAM. This gives the 416 MiB Pi Zero 2 W more breathing room without relying on slow SD-card swap.
+
 List running services before disabling anything:
 
 ```bash
@@ -641,7 +727,7 @@ systemctl list-units --type=service --state=running
 
 Do not disable networking, SSH, dbus, or login services unless you have a recovery path.
 
-## 14. Maintenance Commands
+## 15. Maintenance Commands
 
 Update Debian/Raspberry Pi packages:
 
@@ -689,25 +775,19 @@ cd ~/conky-manager2 && make clean
 cd ~/mx-conky-data && fakeroot debian/rules clean
 ```
 
-## 15. Quick Rebuild Checklist
+## 16. Quick Rebuild Checklist
 
 1. Install Raspberry Pi OS Lite / Debian trixie arm64.
 2. Enable SSH and log in as your normal user.
-3. Run console font setup.
-4. Install base packages.
-5. Back up `~/.config`.
-6. Clone and copy BunsenLabs `carbon` configs.
-7. Create `~/.xinitrc`.
-8. Configure Openbox autostart.
-9. Configure jgmenu right-click.
-10. Pick tint2 theme.
-11. Set wallpaper with nitrogen.
-12. Build/install `conky-manager2`.
-13. Build/install `mx-conky-data`.
-14. Launch `startx`.
-15. Tune Conky and panel theme.
+3. Run `sudo apt install -y git ca-certificates`.
+4. Clone this repo.
+5. Run `./install.sh`.
+6. Start X with `startx`.
+7. Right-click the desktop for jgmenu.
+8. Use `rofi -show drun` for app launching.
+9. Use the Power submenu for log out, reboot, and power off.
 
-## 16. Troubleshooting
+## 17. Troubleshooting
 
 Validate Openbox XML:
 
@@ -730,14 +810,15 @@ Restart panel:
 
 ```bash
 killall tint2 || true
-tint2 &
+tint2 -c ~/.config/tint2/tangram.tint2rc &
 ```
 
 Restart Conky:
 
 ```bash
 killall conky || true
-conky &
+cd ~/.conky/MX-CowonTangram-SysInfo
+conky -c ./MX-CowonTangram-SysInfo &
 ```
 
 Reset jgmenu:
@@ -755,7 +836,16 @@ less ~/.local/share/xorg/Xorg.0.log
 less ~/.xsession-errors
 ```
 
-## 17. Progress Log
+Verify Conky is not clipped at the screen edge with a screenshot:
+
+```bash
+mkdir -p ~/Pictures/Screenshots
+scrot -z ~/Pictures/Screenshots/conky-check.png
+```
+
+Open the screenshot and confirm the first colored Conky pixels do not touch the top edge of the screen. The custom theme now uses a smaller Cowon clock and explicit top-right anchoring with a screen gap, which is more reliable under Openbox than asking a normal Conky window to sit at the bottom while drawing a tall clock.
+
+## 18. Progress Log
 
 | Date | Item | Status | Notes |
 | --- | --- | --- | --- |
@@ -766,3 +856,6 @@ less ~/.xsession-errors
 | 2026-05-02 | MX Conky theme data | Installed | `mx-conky-data`, `mx-conky-data-bin`, `mx-conky-data-themes` 20251102 |
 | 2026-05-02 | Conky Manager2 | Installed | Built from `~/conky-manager2`; binary at `/usr/bin/conky-manager2` |
 | 2026-05-02 | MX Conky Qt manager | Skipped | Build was too swap-heavy for Pi Zero 2 W; use `conky-manager2` |
+| 2026-05-03 | Tangram system theme | Working | GTK, Openbox, tint2, jgmenu, rofi, Dillo, mpv, Geany, PCManFM, Terminator |
+| 2026-05-03 | Self-contained jgmenu | Working | Removed Bunsen `bl-*` helper dependencies; power menu uses `systemctl` |
+| 2026-05-03 | Clean installer | Added | `install.sh` clones/applies the repo and installs packages from a Lite base |
